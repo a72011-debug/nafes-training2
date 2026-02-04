@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
@@ -44,6 +44,21 @@ export default function QuizPage({ questionPath, onFinish }) {
     loadQuestions();
   }, [questionPath]);
 
+  // دالة الانتقال للسؤال التالي — الآن داخل useCallback
+  const goNext = useCallback(
+    (isCorrect) => {
+      const newScore = isCorrect ? score + 1 : score;
+
+      if (currentIndex < questions.length - 1) {
+        setScore(newScore);
+        setCurrentIndex((i) => i + 1);
+      } else {
+        onFinish(newScore, questions.length, newScore);
+      }
+    },
+    [score, currentIndex, questions.length, onFinish]
+  );
+
   // إعادة ضبط المؤقت عند الانتقال للسؤال التالي
   useEffect(() => {
     setTimeLeft(20);
@@ -62,19 +77,7 @@ export default function QuizPage({ questionPath, onFinish }) {
 
     const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft, loading, currentIndex, questions.length]);
-
-  // الانتقال للسؤال التالي
-  function goNext(isCorrect) {
-    const newScore = isCorrect ? score + 1 : score;
-
-    if (currentIndex < questions.length - 1) {
-      setScore(newScore);
-      setCurrentIndex((i) => i + 1);
-    } else {
-      onFinish(newScore, questions.length, newScore);
-    }
-  }
+  }, [timeLeft, loading, currentIndex, questions.length, goNext]);
 
   // عند اختيار الإجابة
   function handleAnswer(option) {
