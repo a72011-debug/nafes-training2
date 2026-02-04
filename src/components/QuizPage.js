@@ -21,6 +21,7 @@ export default function QuizPage({ questionPath, onFinish }) {
     return array;
   }
 
+  // تحميل الأسئلة
   useEffect(() => {
     async function loadQuestions() {
       try {
@@ -29,10 +30,7 @@ export default function QuizPage({ questionPath, onFinish }) {
           return;
         }
 
-        console.log("📌 المسار المستلم:", questionPath.main);
-
         const itemsRef = collection(db, questionPath.main);
-
         const snapshot = await getDocs(itemsRef);
         const loaded = snapshot.docs.map((d) => d.data());
 
@@ -46,11 +44,13 @@ export default function QuizPage({ questionPath, onFinish }) {
     loadQuestions();
   }, [questionPath]);
 
+  // إعادة ضبط المؤقت عند الانتقال للسؤال التالي
   useEffect(() => {
     setTimeLeft(20);
     setSelected(null);
   }, [currentIndex]);
 
+  // المؤقت
   useEffect(() => {
     if (loading) return;
     if (currentIndex >= questions.length) return;
@@ -64,6 +64,7 @@ export default function QuizPage({ questionPath, onFinish }) {
     return () => clearTimeout(timer);
   }, [timeLeft, loading, currentIndex, questions.length]);
 
+  // الانتقال للسؤال التالي
   function goNext(isCorrect) {
     const newScore = isCorrect ? score + 1 : score;
 
@@ -75,6 +76,7 @@ export default function QuizPage({ questionPath, onFinish }) {
     }
   }
 
+  // عند اختيار الإجابة
   function handleAnswer(option) {
     if (selected !== null) return;
 
@@ -100,21 +102,25 @@ export default function QuizPage({ questionPath, onFinish }) {
     <div style={{ padding: "20px", direction: "rtl", textAlign: "center" }}>
       <h2>السؤال {currentIndex + 1} من {questions.length}</h2>
 
-      <div style={{
-        fontSize: "22px",
-        fontWeight: "bold",
-        color: timeLeft <= 5 ? "red" : "green",
-        marginBottom: "10px"
-      }}>
+      <div
+        style={{
+          fontSize: "22px",
+          fontWeight: "bold",
+          color: timeLeft <= 5 ? "red" : "green",
+          marginBottom: "10px",
+        }}
+      >
         الوقت المتبقي: {timeLeft} ثانية
       </div>
 
-      <h3 style={{
-        marginTop: "35px",
-        marginBottom: "25px",
-        fontSize: "24px",
-        lineHeight: "1.6"
-      }}>
+      <h3
+        style={{
+          marginTop: "35px",
+          marginBottom: "25px",
+          fontSize: "24px",
+          lineHeight: "1.6",
+        }}
+      >
         {q.question}
       </h3>
 
@@ -142,7 +148,7 @@ export default function QuizPage({ questionPath, onFinish }) {
               color: selected !== null ? "white" : "black",
               border: "1px solid #ccc",
               borderRadius: "10px",
-              cursor: selected !== null ? "not-allowed" : "pointer"
+              cursor: selected !== null ? "not-allowed" : "pointer",
             }}
           >
             {opt}
