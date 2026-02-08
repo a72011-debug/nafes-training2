@@ -264,7 +264,7 @@ function App() {
 <button
   onClick={() => {
     if (passwordInput === TEACHER_PASSWORD) {
-      setIsTeacher(true);
+     
       localStorage.setItem("teacherAuth", "true");
       setPage("teacher");
     } else {
