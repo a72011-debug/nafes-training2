@@ -16,8 +16,11 @@ function TeacherQuestionBank() {
 
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
-  const [answer, setAnswer] = useState("");
+  const [optionImages, setOptionImages] = useState(["", "", "", ""]);
+  const [answer, setAnswer] = useState(""); // رقم الخيار الصحيح
   const [unit, setUnit] = useState("");
+
+  const [questionImage, setQuestionImage] = useState("");
 
   const [questionsList, setQuestionsList] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -82,12 +85,15 @@ function TeacherQuestionBank() {
     const path = getCollectionPath();
     if (!path) return alert("اختاري الصف والمادة أولاً");
 
-    if (!question.trim() || !answer.trim()) return;
+    if (!question.trim()) return alert("اكتبي نص السؤال");
+    if (answer === "") return alert("حددي رقم الإجابة الصحيحة (0–3)");
 
     await addDoc(collection(db, path), {
       question,
+      questionImage,
       options,
-      answer,
+      optionImages,
+      answer: Number(answer), // ⭐ رقم الخيار الصحيح
       unit,
       type: "mcq",
       grade,
@@ -107,8 +113,10 @@ function TeacherQuestionBank() {
 
     await updateDoc(ref, {
       question,
+      questionImage,
       options,
-      answer: answer || "",
+      optionImages,
+      answer: Number(answer),
       unit,
       type: "mcq",
       grade,
@@ -122,8 +130,10 @@ function TeacherQuestionBank() {
   function clearForm() {
     setQuestion("");
     setOptions(["", "", "", ""]);
+    setOptionImages(["", "", "", ""]);
     setAnswer("");
     setUnit("");
+    setQuestionImage("");
     setEditingId(null);
   }
 
@@ -135,8 +145,10 @@ function TeacherQuestionBank() {
 
   function startEdit(q) {
     setQuestion(q.question);
+    setQuestionImage(q.questionImage || "");
     setOptions(q.options || ["", "", "", ""]);
-    setAnswer(q.answer || "");
+    setOptionImages(q.optionImages || ["", "", "", ""]);
+    setAnswer(q.answer?.toString() || "");
     setUnit(q.unit || "");
     setEditingId(q.id);
   }
@@ -190,32 +202,62 @@ function TeacherQuestionBank() {
             </h2>
 
             <textarea
-              placeholder="اكتبي نص السؤال هنا"
+              placeholder="اكتبي نص السؤال هنا (يدعم نص طويل)"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              style={styles.textarea}
+              style={{
+                ...styles.input,
+                height: "120px",
+                resize: "vertical",
+                fontSize: "18px"
+              }}
+            />
+
+            {/* ⭐ صورة السؤال */}
+            <input
+              type="text"
+              placeholder="رابط صورة السؤال (اختياري)"
+              value={questionImage}
+              onChange={(e) => setQuestionImage(e.target.value)}
+              style={styles.input}
             />
 
             <h3 style={styles.smallTitle}>الخيارات</h3>
 
             {options.map((opt, index) => (
-              <input
-                key={index}
-                type="text"
-                placeholder={`الخيار ${index + 1}`}
-                value={opt}
-                onChange={(e) => {
-                  const newOptions = [...options];
-                  newOptions[index] = e.target.value;
-                  setOptions(newOptions);
-                }}
-                style={styles.input}
-              />
+              <div key={index}>
+                <input
+                  type="text"
+                  placeholder={`الخيار ${index + 1}`}
+                  value={opt}
+                  onChange={(e) => {
+                    const newOptions = [...options];
+                    newOptions[index] = e.target.value;
+                    setOptions(newOptions);
+                  }}
+                  style={styles.input}
+                />
+
+                <input
+                  type="text"
+                  placeholder={`رابط صورة الخيار ${index + 1} (اختياري)`}
+                  value={optionImages[index]}
+                  onChange={(e) => {
+                    const newImages = [...optionImages];
+                    newImages[index] = e.target.value;
+                    setOptionImages(newImages);
+                  }}
+                  style={styles.input}
+                />
+              </div>
             ))}
 
+            {/* ⭐ الإجابة الصحيحة = رقم الخيار */}
             <input
-              type="text"
-              placeholder="الإجابة الصحيحة"
+              type="number"
+              min="0"
+              max="3"
+              placeholder="رقم الإجابة الصحيحة (0–3)"
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               style={styles.input}
@@ -267,6 +309,14 @@ function TeacherQuestionBank() {
                   {index + 1}. {q.question}
                 </h3>
 
+                {q.questionImage && (
+                  <img
+                    src={q.questionImage}
+                    alt="صورة السؤال"
+                    style={{ maxWidth: "200px", margin: "10px 0" }}
+                  />
+                )}
+
                 {q.unit && (
                   <p style={styles.unitText}>
                     <strong>الوحدة:</strong> {q.unit}
@@ -276,13 +326,20 @@ function TeacherQuestionBank() {
                 <ul>
                   {q.options?.map((opt, i) => (
                     <li key={i} style={styles.optionItem}>
-                      {opt}
+                      {opt || "(صورة فقط)"}
+                      {q.optionImages?.[i] && (
+                        <img
+                          src={q.optionImages[i]}
+                          alt="صورة خيار"
+                          style={{ maxWidth: "120px", marginTop: "5px" }}
+                        />
+                      )}
                     </li>
                   ))}
                 </ul>
 
                 <p>
-                  <strong>الإجابة الصحيحة:</strong> {q.answer}
+                  <strong>الإجابة الصحيحة:</strong> الخيار رقم {q.answer}
                 </p>
 
                 <div style={styles.cardButtonsRow}>

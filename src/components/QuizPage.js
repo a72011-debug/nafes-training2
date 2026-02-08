@@ -34,7 +34,7 @@ export default function QuizPage({ questionPath, onFinish }) {
         const snapshot = await getDocs(itemsRef);
         const loaded = snapshot.docs.map((d) => d.data());
 
-        setQuestions(shuffleArray(loaded));
+        setQuestions(shuffleArray(loaded).slice(0, 10));
         setLoading(false);
       } catch (error) {
         console.error("Error loading questions:", error);
@@ -44,7 +44,7 @@ export default function QuizPage({ questionPath, onFinish }) {
     loadQuestions();
   }, [questionPath]);
 
-  // دالة الانتقال للسؤال التالي — الآن داخل useCallback
+  // الانتقال للسؤال التالي
   const goNext = useCallback(
     (isCorrect) => {
       const newScore = isCorrect ? score + 1 : score;
@@ -59,15 +59,17 @@ export default function QuizPage({ questionPath, onFinish }) {
     [score, currentIndex, questions.length, onFinish]
   );
 
-  // إعادة ضبط المؤقت عند الانتقال للسؤال التالي
+  // إعادة ضبط المؤقت عند الانتقال
   useEffect(() => {
     setTimeLeft(20);
     setSelected(null);
   }, [currentIndex]);
 
-  // المؤقت
+  // المؤقت — بعد الإصلاح
   useEffect(() => {
     if (loading) return;
+
+    // ⭐ إذا انتهت الأسئلة — أوقف المؤقت نهائيًا
     if (currentIndex >= questions.length) return;
 
     if (timeLeft === 0) {
@@ -80,15 +82,13 @@ export default function QuizPage({ questionPath, onFinish }) {
   }, [timeLeft, loading, currentIndex, questions.length, goNext]);
 
   // عند اختيار الإجابة
-  function handleAnswer(option) {
+  function handleAnswer(index) {
     if (selected !== null) return;
 
-    const correct = questions[currentIndex].answer.trim();
-    const chosen = option.trim();
+    setSelected(index);
 
-    setSelected(option);
-
-    const isCorrect = chosen === correct;
+    const correctIndex = Number(questions[currentIndex].answer);
+    const isCorrect = index === correctIndex;
 
     if (isCorrect) correctSound.play();
     else wrongSound.play();
@@ -97,7 +97,11 @@ export default function QuizPage({ questionPath, onFinish }) {
   }
 
   if (loading) return <div>جاري تحميل الأسئلة...</div>;
-  if (currentIndex >= questions.length) return null;
+
+  // ⭐ منع ظهور أي سؤال إضافي بعد انتهاء الأسئلة
+  if (currentIndex >= questions.length) {
+    return <div></div>;
+  }
 
   const q = questions[currentIndex];
 
@@ -127,18 +131,27 @@ export default function QuizPage({ questionPath, onFinish }) {
         {q.question}
       </h3>
 
+      {/* صورة السؤال */}
+      {q.questionImage && (
+        <img
+          src={q.questionImage}
+          alt="صورة السؤال"
+          style={{ maxWidth: "80%", margin: "15px auto", borderRadius: "10px" }}
+        />
+      )}
+
       {q.options.map((opt, i) => {
         let bg = "#fff";
 
         if (selected !== null) {
-          if (opt.trim() === q.answer.trim()) bg = "green";
-          else if (opt === selected) bg = "red";
+          if (i === Number(q.answer)) bg = "green"; // الصحيح
+          else if (i === selected) bg = "red"; // اختيار الطالب
         }
 
         return (
           <button
             key={i}
-            onClick={() => handleAnswer(opt)}
+            onClick={() => handleAnswer(i)}
             disabled={selected !== null}
             style={{
               display: "block",
@@ -154,7 +167,28 @@ export default function QuizPage({ questionPath, onFinish }) {
               cursor: selected !== null ? "not-allowed" : "pointer",
             }}
           >
-            {opt}
+
+            {/* نص الخيار */}
+            {opt && (
+              <div style={{ marginBottom: "10px" }}>
+                {opt}
+              </div>
+            )}
+
+            {/* صورة الخيار */}
+            {q.optionImages && q.optionImages[i] && (
+              <img
+                src={q.optionImages[i]}
+                alt="صورة الخيار"
+                style={{
+                  maxWidth: "200px",
+                  display: "block",
+                  margin: "10px auto",
+                  borderRadius: "10px"
+                }}
+              />
+            )}
+
           </button>
         );
       })}
