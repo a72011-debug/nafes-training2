@@ -28,7 +28,7 @@ function App() {
   const [totalQuestions, setTotalQuestions] = useState(null);
   const [totalScore, setTotalScore] = useState(null);
 
-  const [isTeacher, setIsTeacher] = useState(false);
+  
   const TEACHER_PASSWORD = "teacher123";
   const [passwordInput, setPasswordInput] = useState("");
   useEffect(() => {
