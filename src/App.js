@@ -30,7 +30,7 @@ function App() {
 
   const [isTeacher, setIsTeacher] = useState(false);
   const TEACHER_PASSWORD = "teacher123";
-
+  const [passwordInput, setPasswordInput] = useState("");
   useEffect(() => {
     setPage("start");
   }, []);
@@ -254,16 +254,27 @@ function App() {
           <h2 style={styles.title}>تسجيل دخول المعلمة</h2>
 
           <input
-            type="password"
-            placeholder="أدخلي كلمة المرور"
-            onChange={(e) => {
-              if (e.target.value === TEACHER_PASSWORD) {
-                setIsTeacher(true);
-                setPage("teacher");
-              }
-            }}
-            style={styles.input}
-          />
+  type="password"
+  placeholder="أدخلي كلمة المرور"
+  value={passwordInput}
+  onChange={(e) => setPasswordInput(e.target.value)}
+  style={styles.input}
+/>
+
+<button
+  onClick={() => {
+    if (passwordInput === TEACHER_PASSWORD) {
+      setIsTeacher(true);
+      localStorage.setItem("teacherAuth", "true");
+      setPage("teacher");
+    } else {
+      alert("كلمة المرور غير صحيحة");
+    }
+  }}
+  style={styles.button}
+>
+  دخول
+</button>
 
           <button
             onClick={() => setPage("start")}
@@ -274,13 +285,17 @@ function App() {
         </div>
       )}
 
-      {page === "teacher" && isTeacher && <TeacherQuestionBank />}
+      
 
-      {page === "teacher" && !isTeacher && (
-        <p style={{ textAlign: "center", marginTop: "50px", fontSize: "22px" }}>
-          ❌ لا يمكنك الدخول. هذه الصفحة خاصة بالمعلمة فقط.
-        </p>
-      )}
+      {page === "teacher" && (
+  localStorage.getItem("teacherAuth") === "true" ? (
+    <TeacherQuestionBank />
+  ) : (
+    <p style={{ textAlign: "center", marginTop: "50px", fontSize: "22px" }}>
+      ❌ لا يمكنك الدخول. هذه الصفحة خاصة بالمعلمة فقط.
+    </p>
+  )
+)}
 
       {page === "quiz" && (
         <QuizPage

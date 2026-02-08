@@ -160,6 +160,27 @@ function TeacherQuestionBank() {
 
   return (
     <div style={styles.container}>
+      
+    {/* ⭐ زر تسجيل الخروج */}
+    <button
+      onClick={() => {
+        localStorage.removeItem("teacherAuth");
+        window.location.href = "/";
+      }}
+      style={{
+        margin: "20px",
+        padding: "10px 20px",
+        backgroundColor: "#d9534f",
+        color: "white",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontSize: "18px"
+      }}
+    >
+      تسجيل خروج
+    </button>
+
       <button
         onClick={() => (window.location.href = "/")}
         style={styles.backButton}
