@@ -54,37 +54,46 @@ function App() {
     setTotalScore(cumulativeScore);
 
     try {
-      const honorRef = collection(db, "honorBoard");
+ const honorRef = collection(db, "honorBoard");
 
-      const q = query(
-        honorRef,
-        where("name", "==", studentName),
-        where("grade", "==", grade),
-        where("subject", "==", subject)
-      );
+const q = query(
+  honorRef,
+  where("name", "==", studentName),
+  where("grade", "==", grade),
+  where("subject", "==", subject)
+);
 
-      const snapshot = await getDocs(q);
+const snapshot = await getDocs(q);
 
-      if (!snapshot.empty) {
-        const docRef = doc(db, "honorBoard", snapshot.docs[0].id);
-        const oldData = snapshot.docs[0].data();
+// ⭐ إذا كان هناك أكثر من سجل لنفس الطالبة في نفس المادة → نحذف الزائد
+if (snapshot.size > 1) {
+  snapshot.docs.slice(1).forEach(async (d) => {
+    await deleteDoc(doc(db, "honorBoard", d.id));
+  });
+}
 
-        await updateDoc(docRef, {
-          score: oldData.score + score,
-          total: oldData.total + total,
-          date: new Date().toISOString()
-        });
+if (!snapshot.empty) {
+  // ⭐ تحديث السجل الوحيد المتبقي
+  const docRef = doc(db, "honorBoard", snapshot.docs[0].id);
+  const oldData = snapshot.docs[0].data();
 
-      } else {
-        await addDoc(honorRef, {
-          name: studentName,
-          grade: grade,
-          subject: subject,
-          score: score,
-          total: total,
-          date: new Date().toISOString()
-        });
-      }
+  await updateDoc(docRef, {
+    score: oldData.score + score,
+    total: oldData.total + total,
+    date: new Date().toISOString()
+  });
+
+} else {
+  // ⭐ إنشاء سجل جديد للمادة
+  await addDoc(honorRef, {
+    name: studentName,
+    grade: grade,
+    subject: subject,
+    score: score,
+    total: total,
+    date: new Date().toISOString()
+  });
+}
 
     } catch (error) {
       console.error("Error saving honor record:", error);
