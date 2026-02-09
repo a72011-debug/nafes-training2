@@ -13,7 +13,8 @@ import {
   getDocs,
   updateDoc,
   addDoc,
-  doc
+  doc,
+  deleteDoc   // ⭐ أضيفيه هنا
 } from "firebase/firestore";
 
 import bgImage from "./assets/certificate-bg1.jpg";
