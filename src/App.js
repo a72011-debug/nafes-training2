@@ -176,9 +176,11 @@ if (!snapshot.empty) {
         <div
           style={{
             backgroundImage: `url(${bgImage})`,
-            backgroundSize: "cover",
+            backgroundSize: "contain",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
+            backgroundColor: "white",
+
             backgroundAttachment: "fixed",
             width: "100vw",
             height: "100vh",
