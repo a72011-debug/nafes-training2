@@ -365,16 +365,12 @@ export default App;
 
 const styles = {
   startContainerTransparent: {
-     width: "100%",
-  maxWidth: "450px",
-  backgroundColor: "rgba(255, 255, 255, 0.85)",
-  padding: "25px",
-  borderRadius: "12px",
-  textAlign: "center",
-  display: "flex",
-  flexDirection: "column",
-  gap: "15px"
-
+    width: "450px",
+    textAlign: "center",
+    padding: "25px",
+    background: "rgba(255, 255, 255, 0.75)",
+    borderRadius: "12px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.2)"
   },
 
   startContainer: {
@@ -396,33 +392,35 @@ const styles = {
   },
 
   input: {
-    width: "100%",
-  padding: "14px",
-  fontSize: "18px",
-  borderRadius: "8px",
-  border: "1px solid #ccc",
-  outline: "none"
+    width: "90%",
+    padding: "12px",
+    fontSize: "18px",
+    borderRadius: "8px",
+    border: "1px solid #aaa",
+    marginBottom: "20px"
   },
 
   button: {
-    width: "100%",
-  padding: "14px",
-  fontSize: "20px",
-  backgroundColor: "#4a90e2",
-  color: "white",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer"
+    width: "90%",
+    padding: "12px",
+    fontSize: "20px",
+    backgroundColor: "#4a90e2",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    marginBottom: "15px"
   },
 
   secondaryButton: {
-     width: "100%",
-  padding: "12px",
-  fontSize: "18px",
-  backgroundColor: "#eee",
-  border: "1px solid #ccc",
-  borderRadius: "8px",
-  cursor: "pointer"
-
+    width: "90%",
+    padding: "12px",
+    fontSize: "18px",
+    backgroundColor: "white",
+    color: "#4a90e2",
+    border: "2px solid #4a90e2",
+    borderRadius: "8px",
+    cursor: "pointer",
+    marginTop: "10px"
   }
 };
