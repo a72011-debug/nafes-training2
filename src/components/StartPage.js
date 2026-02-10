@@ -12,9 +12,9 @@ function StartPage({ onGoToNamePage }) {
       </button>
 
       <p style={styles.footer}>
-        إعداد المعلمات: أمينة الرحيلي – سامية الصبحي  
+        إعداد المعلمات: أمينة الرحيلي – سامية الصبحي
         <br />
-       1447 العام الدراسي
+        1447 العام الدراسي
       </p>
     </div>
   );
@@ -24,24 +24,35 @@ export default StartPage;
 
 const styles = {
   container: {
+    width: "100%",
+    maxWidth: "500px",
+    margin: "0 auto",
+    padding: "20px",
+    marginTop: "40px",
     textAlign: "center",
-    marginTop: "80px",
     fontFamily: "Tahoma",
-    direction: "rtl"
+    direction: "rtl",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
   },
+
   title: {
     fontSize: "32px",
     marginBottom: "20px",
     color: "#4a90e2",
     fontWeight: "bold"
   },
+
   text: {
     fontSize: "18px",
     marginBottom: "30px",
     color: "#555"
   },
+
   startButton: {
-    padding: "12px 25px",
+    width: "100%",
+    padding: "14px 0",
     fontSize: "20px",
     backgroundColor: "#4a90e2",
     color: "white",
@@ -50,6 +61,7 @@ const styles = {
     cursor: "pointer",
     transition: "0.3s"
   },
+
   footer: {
     marginTop: "60px",
     fontSize: "16px",

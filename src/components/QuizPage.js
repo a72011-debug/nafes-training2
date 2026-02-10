@@ -6,7 +6,7 @@ export default function QuizPage({ questionPath, onFinish }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(20);
+  const [timeLeft, setTimeLeft] = useState(70);
   const [selected, setSelected] = useState(null);
   const [score, setScore] = useState(0);
 
@@ -61,7 +61,7 @@ export default function QuizPage({ questionPath, onFinish }) {
 
   // إعادة ضبط المؤقت عند الانتقال
   useEffect(() => {
-    setTimeLeft(20);
+    setTimeLeft(70);
     setSelected(null);
   }, [currentIndex]);
 
